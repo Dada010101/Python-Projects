@@ -19,13 +19,15 @@ SCORE = 0
 # Default postion of game scene
 
 def reset():
-    global snake, snake_dir, food_position, pen
- 
+    global snake, snake_dir, food_position, pen, SCORE
+    SCORE = 0
+    update_score_display()
     snake = [[0,0],[0,20],[0,40],[0,60],[0,80]]
     snake_dir = "up" #default snake direction
     food_position = get_random_food_position()
     food.goto(food_position) # render food on scene
     move_snake()
+
 
 def move_snake():
     global snake_dir,SCORE
@@ -33,7 +35,7 @@ def move_snake():
     new_head = snake[-1].copy()
     new_head[0] = snake[-1][0] + offsets[snake_dir][0]
     new_head[1] = snake[-1][1] + offsets[snake_dir][1]
-    
+
     if new_head in snake[:-1]:
         print(SCORE)
         reset()
@@ -61,12 +63,19 @@ def move_snake():
        
         screen.update() 
         t.ontimer(move_snake, delay)
- 
+
+# For score tracking on screen
+def update_score_display():
+    score.clear()
+    score.write(f"Score: {SCORE}", align="center", font=("Times New Roman", 24, "normal"))
+
+
 # If snake collides with food
 def food_collision():
     global food_position, SCORE
     if get_distance(snake[-1], food_position) < 20:
         SCORE += 10
+        update_score_display()
         food_position = get_random_food_position()
         food.goto(food_position)
         return True
@@ -121,12 +130,19 @@ food.color("red")
 food.shapesize(food_size / 20)
 food.penup()
 
+#define score setup
+score = t.Turtle()
+score.penup()
+score.goto(0, 200)
+score.hideturtle()
+
 #define control setup
 screen.listen()
 screen.onkey(go_up, "Up")
 screen.onkey(go_right, "Right")
 screen.onkey(go_down, "Down")
 screen.onkey(go_left, "Left")
+
 
 reset()
 t.done()
